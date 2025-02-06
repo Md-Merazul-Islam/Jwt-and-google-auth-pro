@@ -23,7 +23,12 @@ from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
-
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import login
+from .serializers import LoginSerializer
 from .serializers import UserSerializer
 User = get_user_model()
 
@@ -76,28 +81,6 @@ class RegisterAPIView(generics.CreateAPIView):
         return success_response("Registration successful. You can now log in.", response.data, status.HTTP_201_CREATED)
 
 
-# class LoginView(APIView):
-#     def post(self, request):
-#         serializer = LoginSerializer(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#         user = serializer.validated_data['user']
-
-#         if not user:
-#             return failure_response("Invalid credentials", {"detail": "Invalid user not found"}, status.HTTP_401_UNAUTHORIZED)
-
-#         refresh = RefreshToken.for_user(user)
-#         login(request, user)
-#         return success_response("Login successful", {
-#             'refresh': str(refresh),
-#             'access': str(refresh.access_token),
-#         })
-
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth import login
-from .serializers import LoginSerializer
 
 class LoginView(APIView):
     def post(self, request):
@@ -190,25 +173,6 @@ class PasswordChangeView(APIView):
         return success_response({"message": "Password changed successfully"}, status.HTTP_200_OK)
 
 
-# class ForgotPasswordView(APIView):
-#     def post(self, request):
-#         serializer = ForgotPasswordSerializer(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-
-#         try:
-#             user = User.objects.get(email=serializer.validated_data['email'])
-#         except User.DoesNotExist:
-#             return failure_response("User not found", {"detail": "User not found"}, status.HTTP_404_NOT_FOUND)
-
-#         token = PasswordResetTokenGenerator().make_token(user)
-#         uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
-#         reset_link = f"http://127.0.0.1:8000/api/v1/auth/reset-password/{uidb64}/{token}/"
-
-#         # Log reset link for debugging
-#         print(f"Generated Reset Link: {reset_link}")
-
-#         return success_response("Password reset link generated", {"reset_link": reset_link}, status.HTTP_200_OK)
-
 class ForgotPasswordView(APIView):
     def post(self, request):
         serializer = ForgotPasswordSerializer(data=request.data)
@@ -245,7 +209,6 @@ class ResetPasswordView(APIView):
 # googel auth
 
 
-User = get_user_model()
 
 
 class GoogleLoginView(APIView):
@@ -267,6 +230,9 @@ class GoogleAuthCallbackView(APIView):
         if not code:
             return Response({"error": "No authorization code found."}, status=400)
 
+        print(settings.SOCIAL_AUTH_GOOGLE_OAUTH2_KEY)
+        print(settings.SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET)
+        print(settings.SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI)
         # Exchange authorization code for access token
         token_url = "https://oauth2.googleapis.com/token"
         data = {

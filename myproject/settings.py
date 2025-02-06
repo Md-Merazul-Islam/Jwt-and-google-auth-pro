@@ -6,9 +6,6 @@ from datetime import timedelta
 
 # Load environment variables from .env file
 load_dotenv()
-# Google OAuth Credentials
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = "YOUR_GOOGLE_CLIENT_ID"
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = "YOUR_GOOGLE_CLIENT_SECRET"
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -151,9 +148,11 @@ REST_FRAMEWORK = {
     ),
 }
 # Google OAuth Credentials
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = "YOUR_GOOGLE_CLIENT_ID"
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = "YOUR_GOOGLE_CLIENT_SECRET"
 
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
+SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI ="http://127.0.0.1:8000/api/v1/auth/google/callback/"
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -222,8 +221,8 @@ CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:8000',
     'http://localhost:8000',
     'https://*.127.0.0.1',
-  'https://gym-class-scheduling-q6cx.vercel.app',
-    
+    'https://gym-class-scheduling-q6cx.vercel.app',
+
 ]
 
 CSRF_TRUSTED_ORIGINS = [
