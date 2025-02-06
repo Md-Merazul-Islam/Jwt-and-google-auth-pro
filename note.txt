@@ -1,0 +1,124 @@
+superuse : 
+
+email : meraz@gmail.com 
+username : admin 
+password : meraz1234
+
+
+
+register :  http://127.0.0.1:8000/api/v1/auth/register/
+
+{
+    "username": "",
+    "email": "",
+    "password": "",
+    "confirm_password": ""
+}
+
+respone : 
+
+{
+    "success": true,
+    "statusCode": 201,
+    "message": "Registration successful. You can now log in.",
+    "data": {
+        "username": "meraz",
+        "email": "mdmerazul75@gmail.com"
+    }
+}
+
+
+
+
+
+login :  http://127.0.0.1:8000/api/v1/auth/login/
+
+body:
+{
+    "identifier": "mdmerazul75@gmail.com",
+    "password": "meraz1234"
+}
+{
+    "identifier": "meraz",
+    "password": "meraz1234"
+}
+
+respone : 
+{
+    "success": true,
+    "statusCode": 200,
+    "message": "Login successful",
+    "data": {
+        "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTczOTQyMjIzMCwiaWF0IjoxNzM4ODE3NDMwLCJqdGkiOiIzYjIzZWVkMDQwOTU0ZDUxYTZmMTkxMmQzNzE5Y2VkYyIsInVzZXJfaWQiOjEwfQ.TSz0QXmuzMQtP4RFrLn_GLx4VOlEJWcVWbHcfl3fvlw",
+        "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4ODE5MjMwLCJpYXQiOjE3Mzg4MTc0MzAsImp0aSI6ImQ4MjhhYzdiYWI1ZDQ1NDFiODgwMTYzYTI1ZGNmYTNiIiwidXNlcl9pZCI6MTB9.xuDQQmXLrVJNRCLPODumAbIWnig7ZCqXyfRGsWv1TAg"
+    }
+}
+
+
+protected  :  http://127.0.0.1:8000/api/v1/auth/protected-endpoint/
+
+
+{
+    "message": "You have access!"
+}
+
+
+
+
+
+Get new access Token : http://127.0.0.1:8000/api/v1/auth/token/refresh/
+
+{
+    "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTczOTQyNTc3OSwiaWF0IjoxNzM4ODIwOTc5LCJqdGkiOiIwNTgzZTZlZmYyODY0NDZkODBkZDUxMzU4YmUyNzAyNCIsInVzZXJfaWQiOjEwfQ.siFh016FVwpex-29I44MZOA6cW8zuITLyXUC179OJqI"
+}
+
+respone:
+
+{
+    "success": true,
+    "statusCode": 200,
+    "message": "Token refreshed successfully",
+    "data": {
+        "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4ODIyNzk4LCJpYXQiOjE3Mzg4MjAxNzUsImp0aSI6IjI0YWNhZDEzYzJhYjQ3YjNhMGQ2NjFkZTdlNTU3MGQwIiwidXNlcl9pZCI6MTB9.VSMJ1e69Ih-3DhEjTdFN_AagYwPVNK5CvFO_6l6FWdI"
+    }
+}
+
+
+
+
+Password Change: http://127.0.0.1:8000/api/v1/auth/password-change/
+
+{
+     "old_password":"meraz1234",
+    "new_password": "meraz%%##",
+    "confirm_password":"meraz%%##"
+}
+
+
+
+Forgot Password: /api/v1/auth/password-change/
+
+{
+    "email":"mdmerazul75@gmail.com"
+}
+
+
+response :
+
+{
+    "success": true,
+    "statusCode": 200,
+    "message": "Password reset link generated",
+    "data": {
+        "reset_link": "http://127.0.0.1:8000/api/v1/auth/reset-password/MTA/cksxwm-679d08f3d8bb7d7df84d8978dcba3383/"
+    }
+}
+
+
+api/v1/auth/reset-password/<uidb64>/<token>/
+
+
+{
+    "new_password": "meraz1234",
+    "confirm_password":"meraz1234"
+}
