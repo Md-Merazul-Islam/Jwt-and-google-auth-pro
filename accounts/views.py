@@ -184,7 +184,7 @@ class ForgotPasswordView(APIView):
         reset_link = f"http://127.0.0.1:8000/api/v1/auth/reset-password/{uidb64}/{token}/"
 
         # Log reset link for debugging
-        print(f"Generated Reset Link: {reset_link}")
+        # print(f"Generated Reset Link: {reset_link}")
 
         return success_response("Password reset link generated", {"reset_link": reset_link}, status.HTTP_200_OK)
 
@@ -230,9 +230,9 @@ class GoogleAuthCallbackView(APIView):
         if not code:
             return Response({"error": "No authorization code found."}, status=400)
 
-        print(settings.SOCIAL_AUTH_GOOGLE_OAUTH2_KEY)
-        print(settings.SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET)
-        print(settings.SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI)
+        # print(settings.SOCIAL_AUTH_GOOGLE_OAUTH2_KEY)
+        # print(settings.SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET)
+        # print(settings.SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI)
         # Exchange authorization code for access token
         token_url = "https://oauth2.googleapis.com/token"
         data = {
