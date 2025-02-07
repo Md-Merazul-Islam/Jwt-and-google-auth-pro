@@ -5,7 +5,7 @@ from .models import CustomUser
 
 class CustomUserAdmin(UserAdmin):
     # List the fields to display in the admin list view
-    list_display = ('email', 'username', 'first_name', 'last_name', 'is_staff', 'is_active')
+    list_display = ('email', 'username', 'first_name', 'last_name', 'is_staff', 'is_active','role')
     
     # Fields to search in the admin list view
     search_fields = ('email', 'username')
@@ -17,7 +17,7 @@ class CustomUserAdmin(UserAdmin):
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         ('Personal info', {'fields': ('first_name', 'last_name')}),
-        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
+        ('Permissions', {'fields': ('role','is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
     )
     

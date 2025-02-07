@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.contrib.auth import authenticate, login
 import requests
@@ -81,11 +82,8 @@ class RegisterAPIView(generics.CreateAPIView):
         return success_response("Registration successful. You can now log in.", response.data, status.HTTP_201_CREATED)
 
 
-
-
-
 class CustomRefreshToken(RefreshToken):
-    @classmethod 
+    @classmethod
     def for_user(self, user):
         refresh_token = super().for_user(user)
 
@@ -104,10 +102,11 @@ class LoginView(APIView):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.validated_data['user']
-            
+
             refresh = CustomRefreshToken.for_user(user)
             access_token = str(refresh.access_token)
             refresh_token = str(refresh)
+            
 
             response = Response({
                 'success': True,
@@ -128,7 +127,6 @@ class LoginView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 class ProtectedView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -147,7 +145,8 @@ class LogoutView(APIView):
                 token.blacklist()  # Add the refresh token to the blacklist
 
                 response = success_response("Logout successful")
-                response.delete_cookie('refresh_token')  # Delete the refresh token cookie
+                # Delete the refresh token cookie
+                response.delete_cookie('refresh_token')
                 return response
             return failure_response("Refresh token not provided")
         except Exception as e:
@@ -166,6 +165,7 @@ class RefreshTokenView(APIView):
             except Exception as e:
                 return failure_response("Failed to refresh token", str(e), status.HTTP_400_BAD_REQUEST)
         return failure_response("Refresh token not provided", {}, status.HTTP_400_BAD_REQUEST)
+
 
 class PasswordChangeView(APIView):
     permission_classes = [IsAuthenticated]
@@ -196,7 +196,7 @@ class ForgotPasswordView(APIView):
     def post(self, request):
         serializer = ForgotPasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        
+
         user = serializer.validated_data['email']
         token = PasswordResetTokenGenerator().make_token(user)
         uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
@@ -206,6 +206,7 @@ class ForgotPasswordView(APIView):
         # print(f"Generated Reset Link: {reset_link}")
 
         return success_response("Password reset link generated", {"reset_link": reset_link}, status.HTTP_200_OK)
+
 
 class ResetPasswordView(APIView):
     def post(self, request, uidb64, token):
@@ -228,8 +229,6 @@ class ResetPasswordView(APIView):
 # googel auth
 
 
-
-
 class GoogleLoginView(APIView):
     def get(self, request):
         # Google OAuth authorization URL
@@ -243,16 +242,78 @@ class GoogleLoginView(APIView):
         return Response({"auth_url": google_auth_url})
 
 
+# class GoogleAuthCallbackView(APIView):
+#     def get(self, request):
+#         code = request.GET.get("code")
+#         if not code:
+#             return Response({"error": "No authorization code found."}, status=400)
+
+#         # print(settings.SOCIAL_AUTH_GOOGLE_OAUTH2_KEY)
+#         # print(settings.SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET)
+#         # print(settings.SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI)
+#         # Exchange authorization code for access token
+#         token_url = "https://oauth2.googleapis.com/token"
+#         data = {
+#             "code": code,
+#             "client_id": settings.SOCIAL_AUTH_GOOGLE_OAUTH2_KEY,
+#             "client_secret": settings.SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET,
+#             "redirect_uri": settings.SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI,
+#             "grant_type": "authorization_code",
+#         }
+
+#         # Get the access token from Google
+#         token_response = requests.post(token_url, data=data)
+#         if token_response.status_code != 200:
+#             return Response({"error": "Failed to get access token."}, status=400)
+
+#         token_response_data = token_response.json()
+#         access_token = token_response_data.get("access_token")
+
+#         # Get user info from Google API using the access token
+#         user_info_url = "https://www.googleapis.com/oauth2/v1/userinfo"
+#         user_info_response = requests.get(
+#             user_info_url, headers={"Authorization": f"Bearer {access_token}"}
+#         )
+#         if user_info_response.status_code != 200:
+#             return Response({"error": "Failed to fetch user information."}, status=400)
+
+#         user_data = user_info_response.json()
+#         email = user_data.get("email")
+#         name = user_data.get("name")
+#         try:
+#             user = User.objects.get(email=email)
+#         except ObjectDoesNotExist:
+#             # If user does not exist, create a new one
+#             user = User.objects.create(
+#                 username=email, email=email, first_name=name)
+
+#         # Create or get the user
+#         # user, created = User.objects.get_or_create(
+#         #     username=email, defaults={"email": email, "first_name": name})
+#         if user.username != email:
+#             user.username = email
+#             user.save(update_fields=["username"])
+
+#         # Create JWT token for the user
+#         refresh = CustomRefreshToken.for_user(user)
+
+#         # Respond with the JWT tokens and user information
+#         return Response({
+#             "refresh": str(refresh),
+#             "access": str(refresh.access_token),
+
+#         })
+
+
+User = get_user_model()
+
+
 class GoogleAuthCallbackView(APIView):
     def get(self, request):
         code = request.GET.get("code")
         if not code:
             return Response({"error": "No authorization code found."}, status=400)
 
-        # print(settings.SOCIAL_AUTH_GOOGLE_OAUTH2_KEY)
-        # print(settings.SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET)
-        # print(settings.SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI)
-        # Exchange authorization code for access token
         token_url = "https://oauth2.googleapis.com/token"
         data = {
             "code": code,
@@ -262,7 +323,6 @@ class GoogleAuthCallbackView(APIView):
             "grant_type": "authorization_code",
         }
 
-        # Get the access token from Google
         token_response = requests.post(token_url, data=data)
         if token_response.status_code != 200:
             return Response({"error": "Failed to get access token."}, status=400)
@@ -281,21 +341,38 @@ class GoogleAuthCallbackView(APIView):
         user_data = user_info_response.json()
         email = user_data.get("email")
         name = user_data.get("name")
+        username = email.split("@")[0]
 
-        # Create or get the user
+        # Ensure user is retrieved or created without duplicate email issues
         user, created = User.objects.get_or_create(
-            username=email, defaults={"email": email, "first_name": name})
+            email=email, defaults={"username": username, "first_name": name})
+
+        if not created and user.username != email:
+            user.username = email
+            user.save(update_fields=["username"])
+        # ✅ Set the backend manually
+        user.backend = "django.contrib.auth.backends.ModelBackend"
+        login(request, user, backend="django.contrib.auth.backends.ModelBackend")
 
         # Create JWT token for the user
-        refresh = RefreshToken.for_user(user)
+        refresh = CustomRefreshToken.for_user(user)
+        refresh_token = str(refresh)
+        access_token = str(refresh.access_token)
+        user.is_active = True
 
-        # Respond with the JWT tokens and user information
-        return Response({
-            "refresh": str(refresh),
-            "access": str(refresh.access_token),
-            "user": {
-                "id": user.id,
-                "name": user.first_name,
-                "email": user.email
+        response = Response({
+            'success': True,
+            'statusCode': status.HTTP_200_OK,
+            'message': 'Login successful',
+            'data': {
+                'access': access_token,
+                'refresh': refresh_token,
             }
         })
+
+        # Set HttpOnly cookie for refresh token
+        response.set_cookie('refresh_token', refresh_token,
+                            httponly=True, secure=True)
+
+        login(request, user)
+        return response
