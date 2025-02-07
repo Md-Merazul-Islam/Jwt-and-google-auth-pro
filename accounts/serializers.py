@@ -4,7 +4,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from rest_framework_simplejwt.tokens import RefreshToken
-
+from django.contrib.auth import authenticate
 User = get_user_model()
 
 
@@ -52,9 +52,8 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
-from django.contrib.auth import authenticate
-from rest_framework import serializers
-from django.contrib.auth import authenticate
+
+
 
 class LoginSerializer(serializers.Serializer):
     identifier = serializers.CharField()
@@ -74,10 +73,7 @@ class LoginSerializer(serializers.Serializer):
         if not user:
             raise serializers.ValidationError("Invalid Credentials. Plz check your email or password")
         
-        return {
-            "user": user,
-            "identifier": identifier
-        }
+        return {"user": user}
 
 
 class TokenSerializer(serializers.Serializer):
@@ -85,19 +81,6 @@ class TokenSerializer(serializers.Serializer):
     access = serializers.CharField()
 
 
-# class ForgotPasswordSerializer(serializers.Serializer):
-#     email = serializers.EmailField()
-
-#     def validate_email(self, value):
-#         try:
-#             user = User.objects.get(email=value)
-#             uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
-#             token = default_token_generator.make_token(user)
-#             reset_link = f"http://127.0.0.1:8000/api/v1/auth/reset-password/{uidb64}/{token}/"
-#             return {"reset_link": reset_link}
-#         except User.DoesNotExist:
-#             raise serializers.ValidationError(
-#                 "User with this email does not exist.")
 
 from rest_framework import serializers
 # from django.contrib.auth.models import User

@@ -82,13 +82,30 @@ class RegisterAPIView(generics.CreateAPIView):
 
 
 
+
+
+class CustomRefreshToken(RefreshToken):
+    @classmethod 
+    def for_user(self, user):
+        refresh_token = super().for_user(user)
+
+        # Add custom claims
+        refresh_token.payload['username'] = user.username
+        refresh_token.payload['email'] = user.email
+        # refresh_token.payload['id'] = user.id
+        # Assuming 'role' is an attribute of the user
+        refresh_token.payload['role'] = user.role
+
+        return refresh_token
+
+
 class LoginView(APIView):
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.validated_data['user']
             
-            refresh = RefreshToken.for_user(user)
+            refresh = CustomRefreshToken.for_user(user)
             access_token = str(refresh.access_token)
             refresh_token = str(refresh)
 
@@ -103,11 +120,13 @@ class LoginView(APIView):
             })
 
             # Set HttpOnly cookie for refresh token
-            response.set_cookie('refresh_token', refresh_token, httponly=True, secure=True)
+            response.set_cookie('refresh_token', refresh_token,
+                                httponly=True, secure=True)
 
             login(request, user)
             return response
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class ProtectedView(APIView):

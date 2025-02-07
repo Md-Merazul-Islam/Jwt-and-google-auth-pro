@@ -13,8 +13,7 @@ urlpatterns = [
     path('token/refresh/', RefreshTokenView.as_view(), name='token_refresh'),
     path('password-change/', PasswordChangeView.as_view(), name='password_change'),
     path('forgot-password/', ForgotPasswordView.as_view(), name='forgot_password'),
-    path('reset-password/<uidb64>/<token>/',
-         ResetPasswordView.as_view(), name='reset_password'),
+    path('reset-password/<uidb64>/<token>/', ResetPasswordView.as_view(), name='reset_password'),
     # ---- google auth
     path('google/', GoogleLoginView.as_view(), name='google_login'),
     path('google/callback/',
