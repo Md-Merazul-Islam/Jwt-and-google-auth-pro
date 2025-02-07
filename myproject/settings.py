@@ -64,7 +64,7 @@ ROOT_URLCONF = 'myproject.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates',],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -221,12 +221,12 @@ CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:8000',
     'http://localhost:8000',
     'https://*.127.0.0.1',
-    'https://gym-class-scheduling-q6cx.vercel.app',
+
 
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://gym-class-scheduling-q6cx.vercel.app',
+
     'https://*.127.0.0.1',
     'http://localhost:8000',
     'http://127.0.0.1:5500',
@@ -255,3 +255,16 @@ CORS_ALLOW_METHODS = [
     'PATCH',
     'OPTIONS'
 ]
+
+
+
+
+
+#--- Email  Backend --------------------------------
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Use your email provider's SMTP server
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER =os.getenv('EMAIL_HOST_USER')  # Replace with your email
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD') # Use an app password if using Gmail

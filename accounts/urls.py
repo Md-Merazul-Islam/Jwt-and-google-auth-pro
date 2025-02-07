@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (
     RegisterAPIView, LoginView, ProtectedView,
-    LogoutView, RefreshTokenView, ForgotPasswordView, GoogleLoginView, GoogleAuthCallbackView, PasswordChangeView, ResetPasswordView, ProfileView
+    LogoutView, RefreshTokenView, ForgotPasswordView, GoogleLoginView, GoogleAuthCallbackView, PasswordChangeView, ResetPasswordView, ProfileView,activate,successful,unsuccessful
 )
 
 urlpatterns = [
@@ -11,9 +11,17 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
     path('profile/', ProfileView.as_view(), name='profile'),
     path('token/refresh/', RefreshTokenView.as_view(), name='token_refresh'),
+    
+    #--- password_change
     path('password-change/', PasswordChangeView.as_view(), name='password_change'),
     path('forgot-password/', ForgotPasswordView.as_view(), name='forgot_password'),
     path('reset-password/<uidb64>/<token>/', ResetPasswordView.as_view(), name='reset_password'),
+    
+    # --- email verification
+    path('active/<str:uid64>/<str:token>/', activate, name='active'),
+    path('successful-email-verified/', successful, name='verified_success'),
+    path('unsuccessful-email-verified/',unsuccessful, name='verified_failed'),
+    
     # ---- google auth
     path('google/', GoogleLoginView.as_view(), name='google_login'),
     path('google/callback/',
