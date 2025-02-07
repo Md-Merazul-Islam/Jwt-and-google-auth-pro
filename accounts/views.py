@@ -244,8 +244,18 @@ class ForgotPasswordView(APIView):
 
         # Log reset link for debugging
         # print(f"Generated Reset Link: {reset_link}")
+         # Render email template with reset link
+        email_subject = "Reset Your Password"
+        email_body = render_to_string('reset_password_email.html', {'reset_link': reset_link})
 
-        return success_response("Password reset link generated", {"reset_link": reset_link}, status.HTTP_200_OK)
+        # Send email
+        email = EmailMultiAlternatives(email_subject, '', to=[user.email])
+        email.attach_alternative(email_body, "text/html")
+        email.send()
+
+        return success_response("Password reset email sent", {"reset_link": reset_link}, status.HTTP_200_OK)
+
+        # return success_response("Password reset link generated", {"reset_link": reset_link}, status.HTTP_200_OK)
 
 
 class ResetPasswordView(APIView):
@@ -266,17 +276,15 @@ class ResetPasswordView(APIView):
         user.save()
         return success_response({"message": "Password reset successful"}, status=status.HTTP_200_OK)
 
+#email success verify response
 def successful(request):
     return render(request, 'successful.html')
 
 # email confirm unsuccessful message
-
-
 def unsuccessful(request):
     return render(request, 'unsuccessful.html')
 
 # googel auth
-
 
 class GoogleLoginView(APIView):
     def get(self, request):
